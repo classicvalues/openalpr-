@@ -7,6 +7,7 @@ name: Docker
 
 on:
   schedule:
+<<<<<<< HEAD
     - cron: '35 6 * * *'
   push:
     branches: [ master ]
@@ -14,6 +15,15 @@ on:
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ master ]
+=======
+    - cron: '39 9 * * *'
+  push:
+    branches: [ "master" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "master" ]
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -41,20 +51,34 @@ jobs:
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
         if: github.event_name != 'pull_request'
+<<<<<<< HEAD
         uses: sigstore/cosign-installer@b6757d8360bb6b9803c38b68e8cb7442baaf7eb5
         with:
           cosign-release: 'v1.7.1'
+=======
+        uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
+        with:
+          cosign-release: 'v1.13.1'
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
 
 
       # Workaround: https://github.com/docker/build-push-action/issues/461
       - name: Setup Docker buildx
+<<<<<<< HEAD
         uses: docker/setup-buildx-action@39a1a82492fd1ad19af19d61b5f748e4cb6cd1af
+=======
+        uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
+<<<<<<< HEAD
         uses: docker/login-action@f75d088332b07a08afadf6ac53c74509b9453f12
+=======
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -64,7 +88,11 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
+<<<<<<< HEAD
         uses: docker/metadata-action@314ddf6d4a82333bf1bc7630399df41bf68eba09
+=======
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
@@ -72,12 +100,22 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
+<<<<<<< HEAD
         uses: docker/build-push-action@175d02bffea74695e96b351069ac938b338802f9
+=======
+        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+<<<<<<< HEAD
+=======
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -90,4 +128,8 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
+<<<<<<< HEAD
         run: cosign sign ${{ steps.meta.outputs.tags }}@${{ steps.build-and-push.outputs.digest }}
+=======
+        run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+>>>>>>> b118061178c318eee0ace00ec259277f4e066be9
